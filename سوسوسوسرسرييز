@@ -1,8 +1,7 @@
--- AWIQJ SCRIPT WHITE PRO | PASSWORD: SSF
+CRIPT WHITE PRO | PASSWORD: SSF
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "AWIQJ_WHITE_GUI"
-ScreenGui.Parent = game:GetService("CoreGui")
-
+me:GetService("CoreGui")
 local Main = Instance.new("Frame")
 Main.Size = UDim2.new(0, 350, 0, 400)
 Main.Position = UDim2.new(0.5, -175, 0.5, -200)
