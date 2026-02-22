@@ -1,106 +1,80 @@
--- RAWNW | FINAL EDITION (Close & Minimize)
+-- RAWNW FIX VERSION
 local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "RAWNW_GUI"
 ScreenGui.Parent = game:GetService("CoreGui")
 
--- 1. رسالة الترحيب (تظهر 3 ثواني)
-local WelcomeFrame = Instance.new("Frame")
-WelcomeFrame.Size = UDim2.new(0, 300, 0, 100)
-WelcomeFrame.Position = UDim2.new(0.5, -150, 0.4, -50)
-WelcomeFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-WelcomeFrame.BorderColor3 = Color3.fromRGB(50, 255, 150)
-WelcomeFrame.BorderSizePixel = 2
-WelcomeFrame.Parent = ScreenGui
+-- رسالة الترحيب
+local Welcome = Instance.new("TextLabel")
+Welcome.Size = UDim2.new(0, 300, 0, 50)
+Welcome.Position = UDim2.new(0.5, -150, 0.4, -25)
+Welcome.Text = "Welcome RAWNW"
+Welcome.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+Welcome.TextColor3 = Color3.fromRGB(50, 255, 150)
+Welcome.BorderSizePixel = 2
+Welcome.Parent = ScreenGui
+task.wait(2)
+Welcome:Destroy()
 
-local WelcomeText = Instance.new("TextLabel")
-WelcomeText.Size = UDim2.new(1, 0, 1, 0)
-WelcomeText.Text = "Welcome RAWNW\nجاري تجهيز الواجهة..."
-WelcomeText.TextColor3 = Color3.fromRGB(50, 255, 150)
-WelcomeText.BackgroundTransparency = 1
-WelcomeText.Parent = WelcomeFrame
+-- اللوحة الرئيسية
+local Main = Instance.new("Frame")
+Main.Size = UDim2.new(0, 350, 0, 250)
+Main.Position = UDim2.new(0.5, -175, 0.5, -125)
+Main.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+Main.BorderSizePixel = 2
+Main.BorderColor3 = Color3.fromRGB(50, 255, 150)
+Main.Active = true
+Main.Draggable = true
+Main.Parent = ScreenGui
 
-task.wait(3)
-WelcomeFrame:Destroy()
+-- شريط الأدوات (X و المربع)
+local Bar = Instance.new("Frame")
+Bar.Size = UDim2.new(1, 0, 0, 30)
+Bar.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+Bar.Parent = Main
 
--- 2. الواجهة الرئيسية
-local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 400, 0, 350)
-MainFrame.Position = UDim2.new(0.5, -200, 0.5, -175)
-MainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-MainFrame.BorderColor3 = Color3.fromRGB(50, 255, 150)
-MainFrame.BorderSizePixel = 2
-MainFrame.Active = true; MainFrame.Draggable = true; MainFrame.Parent = ScreenGui
+local Close = Instance.new("TextButton")
+Close.Size = UDim2.new(0, 30, 0, 30)
+Close.Position = UDim2.new(1, -30, 0, 0)
+Close.Text = "X"
+Close.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
+Close.Parent = Bar
+Close.MouseButton1Click:Connect(function() ScreenGui:Destroy() end)
 
--- شريط العنوان العلوي
-local TopBar = Instance.new("Frame")
-TopBar.Size = UDim2.new(1, 0, 0, 35)
-TopBar.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-TopBar.Parent = MainFrame
-
-local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(1, -80, 1, 0)
-Title.Position = UDim2.new(0, 10, 0, 0)
-Title.Text = "RAWNW MENU"; Title.TextColor3 = Color3.fromRGB(50, 255, 150)
-Title.BackgroundTransparency = 1; Title.Parent = TopBar
-
--- زر الإغلاق (X)
-local CloseBtn = Instance.new("TextButton")
-CloseBtn.Size = UDim2.new(0, 30, 0, 30)
-CloseBtn.Position = UDim2.new(1, -35, 0, 2.5)
-CloseBtn.Text = "X"; CloseBtn.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
-CloseBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-CloseBtn.Parent = TopBar
-CloseBtn.MouseButton1Click:Connect(function() ScreenGui:Destroy() end)
-
--- زر التصغير/التكبير (المربع)
-local MinBtn = Instance.new("TextButton")
-MinBtn.Size = UDim2.new(0, 30, 0, 30)
-MinBtn.Position = UDim2.new(1, -70, 0, 2.5)
-MinBtn.Text = "□"; MinBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-MinBtn.TextColor3 = Color3.fromRGB(50, 255, 150)
-MinBtn.Parent = TopBar
-
-local IsMinimized = false
-MinBtn.MouseButton1Click:Connect(function()
-    if not IsMinimized then
-        MainFrame:TweenSize(UDim2.new(0, 400, 0, 35), "Out", "Quad", 0.3, true)
-        IsMinimized = true
+local Min = Instance.new("TextButton")
+Min.Size = UDim2.new(0, 30, 0, 30)
+Min.Position = UDim2.new(1, -65, 0, 0)
+Min.Text = "□"
+Min.Parent = Bar
+local Mini = false
+Min.MouseButton1Click:Connect(function()
+    if not Mini then
+        Main:TweenSize(UDim2.new(0, 350, 0, 30), "Out", "Quad", 0.2)
     else
-        MainFrame:TweenSize(UDim2.new(0, 400, 0, 350), "Out", "Quad", 0.3, true)
-        IsMinimized = false
+        Main:TweenSize(UDim2.new(0, 350, 0, 250), "Out", "Quad", 0.2)
     end
+    Mini = not Mini
 end)
 
--- محتوى السكربت (Scroll)
-local Scroll = Instance.new("ScrollingFrame")
-Scroll.Size = UDim2.new(1, -10, 1, -45); Scroll.Position = UDim2.new(0, 5, 0, 40)
-Scroll.BackgroundTransparency = 1; Scroll.Parent = MainFrame; Scroll.ClipsDescendants = true
-local Layout = Instance.new("UIListLayout")
-Layout.Parent = Scroll; Layout.Padding = UDim.new(0, 5)
+-- زر اختراق الجدران (Noclip)
+local NocBtn = Instance.new("TextButton")
+NocBtn.Size = UDim2.new(0, 200, 0, 40)
+NocBtn.Position = UDim2.new(0.5, -100, 0.5, -20)
+NocBtn.Text = "تفعيل اختراق الجدران"
+NocBtn.Parent = Main
+local NocOn = false
+NocBtn.MouseButton1Click:Connect(function()
+    NocOn = not NocOn
+    NocBtn.BackgroundColor3 = NocOn and Color3.fromRGB(50, 255, 150) or Color3.fromRGB(200, 200, 200)
+end)
 
--- إضافة الأزرار
-local function AddBtn(txt, callback)
-    local b = Instance.new("TextButton")
-    b.Size = UDim2.new(1, -10, 0, 40); b.Text = txt; b.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-    b.TextColor3 = Color3.fromRGB(255, 255, 255); b.Parent = Scroll
-    local act = false
-    b.MouseButton1Click:Connect(function()
-        act = not act
-        b.BackgroundColor3 = act and Color3.fromRGB(50, 255, 150) or Color3.fromRGB(30, 30, 30)
-        callback(act)
-    end)
-end
-
-AddBtn("اختراق الجدران (Noclip)", function(v) _G.Noc = v end)
-AddBtn("الأيم بوت", function(v) _G.Aim = v end)
-
--- تشغيل الميزات في الخلفية
+-- تشغيل الـ Noclip و الخلود
 game:GetService("RunService").Stepped:Connect(function()
     pcall(function()
-        if _G.Noc then
-            for _, p in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
-                if p:IsA("BasePart") then p.CanCollide = false end
+        if NocOn then
+            for _, v in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+                if v:IsA("BasePart") then v.CanCollide = false end
             end
         end
-        if game.Players.LocalPlayer.Character then game.Players.LocalPlayer.Character.Humanoid.Health = 100 end
+        game.Players.LocalPlayer.Character.Humanoid.Health = 100
     end)
 end)
