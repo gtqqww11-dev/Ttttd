@@ -1,4 +1,4 @@
--- -- AWIQJ SCRIPT PRO| PASSWORD: SSF
+-- AWIQJ SCRIPT WHITE PRO | PASSWORD: SSF
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "AWIQJ_WHITE_GUI"
 ScreenGui.Parent = game:GetService("CoreGui")
@@ -30,7 +30,7 @@ PassInput.PlaceholderText = "Password"
 PassInput.Text = ""
 PassInput.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 PassInput.TextColor3 = Color3.fromRGB(0, 0, 0)
-PassInput.Parent = Bar
+PassInput.BorderSizePixel = 1; PassInput.Parent = Bar
 
 local PassBtn = Instance.new("TextButton")
 PassBtn.Size = UDim2.new(0, 35, 0, 25)
@@ -43,8 +43,7 @@ local Content = Instance.new("Frame")
 Content.Size = UDim2.new(1, 0, 1, -40)
 Content.Position = UDim2.new(0, 0, 0, 40)
 Content.BackgroundTransparency = 1
-Content.Visible = false
-Content.Parent = Main
+Content.Visible = false; Content.Parent = Main
 
 PassBtn.MouseButton1Click:Connect(function()
     if PassInput.Text == "SSF" then
@@ -56,11 +55,13 @@ end)
 local function AddBtn(txt, y, callback)
     local b = Instance.new("TextButton")
     b.Size = UDim2.new(0, 280, 0, 45); b.Position = UDim2.new(0.5, -140, 0, y)
-    b.Text = txt; b.Parent = Content
+    b.Text = txt; b.BackgroundColor3 = Color3.fromRGB(245, 245, 245)
+    b.TextColor3 = Color3.fromRGB(0, 0, 0); b.Parent = Content
     local act = false
     b.MouseButton1Click:Connect(function()
         act = not act
         b.BackgroundColor3 = act and Color3.fromRGB(0, 120, 215) or Color3.fromRGB(245, 245, 245)
+        b.TextColor3 = act and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(0, 0, 0)
         callback(act)
     end)
 end
