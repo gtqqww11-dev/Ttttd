@@ -1,4 +1,4 @@
--- AWIQJ SCRIPT WHITE PRO | PASSWORD: SSF
+-- -- AWIQJ SCRIPT PRO| PASSWORD: SSF
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "AWIQJ_WHITE_GUI"
 ScreenGui.Parent = game:GetService("CoreGui")
