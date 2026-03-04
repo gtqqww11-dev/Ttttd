@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>VNX Flow SwiftKey</title>
+
+<style>
+:root{
+  --bg:#ffffff;
+  --panel:#f6f7fb;
+  --card:#ffffff;
+  --line:#e5e7eb;
+  --text:#111827;
+  --muted:#6b7280;
+  --acc:#3ddc84;
+  --danger:#ef4444;
+  --shadow:0 14px 50px rgba(0,0,0,.10);
+  --shadow2:0 10px 30px rgba(0,0,0,.08);
+  --radius:16px;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family: Arial, system-ui, -apple-system, Segoe UI, Roboto;
+  background:var(--bg);
+  color:var(--text);
+}
+
+/* ====== Layout like Discord ====== */
+.app{
+  min-height:100vh;
+  display:grid;
+  grid-template-columns: 280px 1fr;
+}
+
+.sidebar{
+  position:sticky;
+  top:0;
+  height:100vh;
+  border-left:1px solid var(--line);
+  background:linear-gradient(180deg, #ffffff, #fbfbfd);
+  padding:14px;
+  overflow:auto;
+}
+
+.main{
+  padding:18px 16px 90px;
+}
+
+.brandRow{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:10px;
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  background:var(--card);
+  box-shadow:var(--shadow2);
+  margin-bottom:12px;
+}
+
+.brand{
+  display:flex; gap:10px; align-items:center;
+  cursor:pointer; /* for secret owner open */
+  user-select:none;
+}
+.logo{
+  width:38px;height:38px;border-radius:12px;
+  display:grid;place-items:center;
+  background:linear-gradient(135deg, rgba(61,220,132,.28), rgba(0,0,0,0));
+  border:1px solid var(--line);
+  font-weight:900;
+}
+.brandTitle{
+  font-weight:900;
+  letter-spacing:.2px;
+}
+.brandSub{
+  color:var(--muted);
+  font-size:12px;
+  margin-top:2px;
+  font-weight:700;
+}
+
+.topActions{
+  display:flex; gap:8px; flex-wrap:wrap;
+}
+
+.btn{
+  padding:10px 12px;
+  border-radius:14px;
+  border:1px solid var(--line);
+  background:#fff;
+  cursor:pointer;
+  font-weight:900;
+  font-size:14px;
+}
+.btn.primary{
+  background:var(--acc);
+  border-color:rgba(61,220,132,.35);
+}
+.btn.danger{
+  background:#fff;
+  border-color:rgba(239,68,68,.35);
+  color:var(--danger);
+}
+
+.nav{
+  margin-top:12px;
+}
+.nav h4{
+  margin:14px 6px 8px;
+  font-size:12px;
+  color:var(--muted);
+  letter-spacing:.3px;
+}
+.nav .item{
+  width:100%;
+  text-align:right;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:12px 12px;
+  border-radius:14px;
+  border:1px solid transparent;
+  background:transparent;
+  cursor:pointer;
+  font-weight:900;
+  color:var(--text);
+}
+.nav .item:hover{
+  background:rgba(0,0,0,.03);
+  border-color:var(--line);
+}
+.nav .item.active{
+  background:rgba(61,220,132,.12);
+  border-color:rgba(61,220,132,.25);
+}
+
+.small{
+  font-size:12px;
+  color:var(--muted);
+  line-height:1.7;
+  margin:10px 4px 0;
+}
+
+/* ====== Cards ====== */
+.grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:14px;
+}
+@media (min-width: 1000px){
+  .grid{ grid-template-columns: 1.1fr .9fr; }
+}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow2);
+  padding:16px;
+}
+
+.card h2{
+  margin:0 0 10px;
+  font-size:16px;
+}
+.muted{color:var(--muted); font-size:13px; line-height:1.7}
+
+.chips{display:flex; gap:10px; flex-wrap:wrap; margin-top:10px}
+.chip{
+  padding:10px 12px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  background:#fff;
+  font-size:13px;
+  font-weight:900;
+}
+
+.searchRow{
+  display:flex; gap:10px; flex-wrap:wrap;
+  align-items:center;
+}
+#searchInput{
+  flex:1;
+  min-width:240px;
+  padding:16px 16px;
+  border-radius:18px;
+  border:1px solid var(--line);
+  outline:none;
+  font-size:18px;
+  background:#fff;
+}
+
+.quick{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:10px;
+}
+.qbtn{
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  padding:14px 10px;
+  border-radius:16px;
+  border:1px solid var(--line);
+  background:#fff;
+  cursor:pointer;
+  font-weight:900;
+}
+.qbtn:hover{background:rgba(0,0,0,.02)}
+
+/* warning */
+.warn{
+  display:none;
+  margin-top:12px;
+  border:1px solid rgba(239,68,68,.25);
+  background:rgba(239,68,68,.06);
+  border-radius:16px;
+  padding:12px;
+}
+
+/* ====== Overlays ====== */
+.overlay{
+  display:none;
+  position:fixed; inset:0;
+  background:rgba(0,0,0,.12);
+  z-index:1000;
+}
+.modal{
+  position:fixed;
+  left:50%; top:50%;
+  transform:translate(-50%,-50%);
+  width:min(520px, 92vw);
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:18px;
+  box-shadow:0 20px 80px rgba(0,0,0,.18);
+  padding:14px;
+}
+.modalTop{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:10px;
+}
+.xbtn{
+  border:none;
+  background:none;
+  cursor:pointer;
+  font-size:20px;
+  color:#64748b;
+}
+textarea{
+  width:100%;
+  min-height:110px;
+  border-radius:14px;
+  border:1px solid var(--line);
+  padding:12px;
+  outline:none;
+  font-size:15px;
+}
+.row{display:flex; gap:10px; margin-top:10px}
+.row .btn{flex:1}
+
+.passInput{
+  width:100%;
+  padding:12px;
+  border-radius:12px;
+  border:1px solid var(--line);
+  outline:none;
+  font-size:15px;
+}
+.err{
+  display:none;
+  margin-top:8px;
+  color:var(--danger);
+  font-size:13px;
+}
+
+/* ====== Owner Panel ====== */
+.adminOverlay{
+  display:none;
+  position:fixed; inset:0;
+  background:rgba(0,0,0,.20);
+  z-index:2000;
+}
+.adminBox{
+  position:fixed;
+  left:50%; top:50%;
+  transform:translate(-50%,-50%);
+  width:min(980px, 95vw);
+  max-height:85vh;
+  overflow:auto;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:18px;
+  box-shadow:0 20px 90px rgba(0,0,0,.22);
+  padding:14px;
+}
+.adminHead{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:10px;
+}
+.adminTabs{display:flex; gap:10px; flex-wrap:wrap}
+.select{
+  padding:10px 12px;
+  border-radius:14px;
+  border:1px solid var(--line);
+  background:#fff;
+  font-weight:900;
+}
+
+.ticket{
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:12px;
+  margin-top:10px;
+  background:#fff;
+}
+.ticketTop{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.badge{
+  padding:6px 10px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  font-size:12px;
+  font-weight:900;
+}
+.badge.open{background:rgba(61,220,132,.12); border-color:rgba(61,220,132,.25)}
+.badge.done{background:rgba(99,102,241,.10); border-color:rgba(99,102,241,.25)}
+.actions{display:flex; gap:10px; flex-wrap:wrap}
+.actions .btn{padding:10px 12px; border-radius:12px; font-size:14px}
+.ticket p{margin:8px 0 0; white-space:pre-wrap}
+
+hr.sep{border:none;border-top:1px solid var(--line); margin:16px 0}
+
+@media (max-width: 860px){
+  .app{grid-template-columns: 1fr;}
+  .sidebar{position:relative; height:auto;}
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brandRow">
+      <div class="brand" id="brandSecret" title="اضغط 7 مرات لفتح لوحة الأونر">
+        <div class="logo">VNX</div>
+        <div>
+          <div class="brandTitle">VNX Flow SwiftKey</div>
+          <div class="brandSub">Dashboard • Secure Search</div>
+        </div>
+      </div>
+
+      <div class="topActions">
+        <button class="btn" id="openRate">⭐</button>
+        <button class="btn primary" id="openSupport">🛠</button>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <h4>الصفحات</h4>
+      <button class="item active" data-page="home">🏠 الرئيسية</button>
+      <button class="item" data-page="shortcuts">⚡ اختصارات</button>
+      <button class="item" data-page="youtube">▶️ يوتيوب</button>
+      <button class="item" data-page="about">ℹ️ معلومات</button>
+
+      <h4>تنبيه</h4>
+      <div class="small">
+        الحظر/التذاكر/الإحصائيات تعمل على نفس الجهاز والمتصفح فقط (بدون سيرفر).
+      </div>
+    </nav>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <!-- HOME -->
+    <section class="page" id="page-home">
+      <div class="card">
+        <h2>البحث</h2>
+        <div class="muted">اكتب رابط أو كلمة بحث. سيتم فتح النتائج في تبويب جديد.</div>
+
+        <div class="searchRow" style="margin-top:10px">
+          <input id="searchInput" placeholder="اكتب رابط أو كلمة بحث..." />
+          <button class="btn primary" id="goBtn">بحث</button>
+          <button class="btn danger" id="clearBtn">مسح</button>
+        </div>
+
+        <div class="warn" id="warnBox">
+          <b style="color:#b91c1c">⚠️ تحذير أمان</b>
+          <div class="muted" id="warnText" style="margin-top:6px"></div>
+          <div class="row">
+            <button class="btn" id="cancelWarn">إلغاء</button>
+            <button class="btn primary" id="continueWarn">متابعة</button>
+          </div>
+        </div>
+
+        <div class="chips">
+          <span class="chip">HTTPS فقط</span>
+          <span class="chip">حظر روابط مختصرة</span>
+          <span class="chip">فلتر كلمات مشبوهة</span>
+        </div>
+      </div>
+
+      <div class="grid" style="margin-top:14px">
+        <div class="card">
+          <h2>الحماية</h2>
+          <div class="muted">
+            يمنع الروابط غير الآمنة (HTTP)، ويحذر من الروابط المختصرة، ويكشف كلمات خطيرة في الرابط.
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>إحصائيات سريعة</h2>
+          <div class="muted" id="quickStats">...</div>
+          <div class="chips">
+            <span class="chip" id="chipVisits">زيارات: 0</span>
+            <span class="chip" id="chipSearches">بحث: 0</span>
+            <span class="chip" id="chipTickets">بلاغات: 0</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SHORTCUTS -->
+    <section class="page" id="page-shortcuts" style="display:none">
+      <div class="card">
+        <h2>اختصارات</h2>
+        <div class="muted">تفتح في تبويب جديد.</div>
+        <div class="quick">
+          <button class="qbtn" data-url="https://duckduckgo.com/">VNX Search 🔎</button>
+          <button class="qbtn" data-url="https://www.google.com/">Google 🌐</button>
+          <button class="qbtn" data-url="https://discord.com/">Discord 💬</button>
+          <button class="qbtn" data-url="https://www.roblox.com/">Roblox 🧱</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- YOUTUBE -->
+    <section class="page" id="page-youtube" style="display:none">
+      <div class="card">
+        <h2>مقاطع يوتيوب</h2>
+        <div class="muted">أمثلة سريعة:</div>
+        <div class="quick">
+          <button class="qbtn" data-url="https://www.youtube.com/">YouTube ▶️</button>
+          <button class="qbtn" data-url="https://www.youtube.com/results?search_query=technology">Tech 🔎</button>
+          <button class="qbtn" data-url="https://www.youtube.com/results?search_query=gaming">Gaming 🎮</button>
+          <button class="qbtn" data-url="https://www.youtube.com/results?search_query=music">Music 🎵</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section class="page" id="page-about" style="display:none">
+      <div class="card">
+        <h2>معلومات</h2>
+        <div class="muted">
+          - لوحة الأونر مخفية: اضغط شعار VNX 7 مرات ثم كلمة السر.<br>
+          - الدعم يحفظ التذاكر داخل المتصفح.<br>
+          - الحظر يعمل على نفس الجهاز فقط.
+        </div>
+        <div class="chips">
+          <span class="chip" id="userIdChip">User ID: ...</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+</div>
+
+<!-- ====== Support Modal ====== -->
+<div class="overlay" id="supportOverlay">
+  <div class="modal">
+    <div class="modalTop">
+      <b>🛠 تواصل الدعم</b>
+      <button class="xbtn" id="closeSupport">✕</button>
+    </div>
+    <textarea id="supportMsg" placeholder="اكتب المشكلة هنا..."></textarea>
+    <div class="row">
+      <button class="btn primary" id="sendSupport">📩 إرسال</button>
+      <button class="btn" id="cancelSupport">إلغاء</button>
+    </div>
+    <div class="muted" style="margin-top:8px">
+      البلاغ يُحفظ داخل الموقع، وتقدر تشوفه في لوحة الأونر.
+    </div>
+  </div>
+</div>
+
+<!-- ====== Rating Modal ====== -->
+<div class="overlay" id="rateOverlay">
+  <div class="modal" style="width:min(420px,92vw)">
+    <div class="modalTop">
+      <b>⭐ تقييم الموقع</b>
+      <button class="xbtn" id="closeRate">✕</button>
+    </div>
+    <div class="muted">اختر تقييمك ثم اضغط حفظ.</div>
+
+    <div class="row" style="justify-content:center; flex-wrap:wrap">
+      <button class="btn" id="s1">⭐</button>
+      <button class="btn" id="s2">⭐</button>
+      <button class="btn" id="s3">⭐</button>
+      <button class="btn" id="s4">⭐</button>
+      <button class="btn" id="s5">⭐</button>
+    </div>
+
+    <div class="row">
+      <button class="btn primary" id="saveRate">حفظ</button>
+      <button class="btn" id="cancelRate">إلغاء</button>
+    </div>
+
+    <div class="muted" id="rateText" style="margin-top:8px">تقييمك الحالي: 5/5</div>
+  </div>
+</div>
+
+<!-- ====== Owner Password ====== -->
+<div class="overlay" id="ownerPassOverlay">
+  <div class="modal" style="width:min(380px,92vw)">
+    <div class="modalTop">
+      <b>👑 Owner</b>
+      <button class="xbtn" id="ownerPassClose">✕</button>
+    </div>
+    <input class="passInput" id="ownerPassInput" type="password" placeholder="اكتب كلمة السر" />
+    <div class="row">
+      <button class="btn primary" id="ownerPassOk">دخول</button>
+      <button class="btn" id="ownerPassCancel">إلغاء</button>
+    </div>
+    <div class="err" id="ownerPassMsg">كلمة السر غلط</div>
+  </div>
+</div>
+
+<!-- ====== Owner Panel ====== -->
+<div class="adminOverlay" id="adminPanel">
+  <div class="adminBox">
+    <div class="adminHead">
+      <div>
+        <b style="font-size:16px">VNX • Owner Panel</b>
+        <div class="muted" style="margin-top:4px">كلمة السر: EEE — كل شيء محفوظ على نفس الجهاز/المتصفح.</div>
+      </div>
+      <div class="adminTabs">
+        <button class="btn" id="closeAdmin">✕ إغلاق</button>
+        <button class="btn" id="refreshAll">تحديث</button>
+        <button class="btn danger" id="wipeTickets">مسح البلاغات</button>
+      </div>
+    </div>
+
+    <div class="card" style="box-shadow:none">
+      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between">
+        <div>
+          <b>📊 إحصائيات</b>
+          <div class="muted" id="stats">...</div>
+        </div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap">
+          <select class="select" id="filterStatus">
+            <option value="all">الكل</option>
+            <option value="open">مفتوحة</option>
+            <option value="done">تم الحل</option>
+          </select>
+          <select class="select" id="sortBy">
+            <option value="new">الأحدث</option>
+            <option value="old">الأقدم</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="ticketsList" style="margin-top:10px"></div>
+      <div class="muted" id="emptyTickets" style="display:none; margin-top:10px">لا توجد بلاغات.</div>
+
+      <hr class="sep">
+
+      <b>🚫 حظر المستخدمين</b>
+      <div class="muted">تقدر تحظر صاحب البلاغ بزر “حظر”، أو تضيف User ID يدويًا.</div>
+
+      <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px">
+        <input id="banInput" class="passInput" style="flex:1; min-width:240px" placeholder="اكتب User ID للحظر" />
+        <button class="btn danger" id="banAddBtn">حظر</button>
+      </div>
+
+      <div id="banList" style="margin-top:10px"></div>
+      <div class="muted" id="banEmpty" style="display:none; margin-top:10px">لا يوجد محظورين.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===============================
+   0) Helpers + Local IDs
+================================ */
+function escapeHtml(s){
+  return (s||"").replace(/[&<>"']/g, m=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[m]));
+}
+
+function makeId(){
+  try{
+    const arr = new Uint8Array(8);
+    crypto.getRandomValues(arr);
+    return "U" + [...arr].map(x=>x.toString(16).padStart(2,"0")).join("");
+  }catch{
+    return "U" + Math.random().toString(16).slice(2) + Date.now().toString(16);
+  }
+}
+
+const OWNER_PASSWORD = "EEE";
+
+/* USER ID */
+const USER_ID_KEY = "vnx_user_id_v2";
+let USER_ID = localStorage.getItem(USER_ID_KEY);
+if(!USER_ID){
+  USER_ID = makeId();
+  localStorage.setItem(USER_ID_KEY, USER_ID);
+}
+document.getElementById("userIdChip").textContent = "User ID: " + USER_ID;
+
+/* ===============================
+   1) Pages (sidebar)
+================================ */
+const pages = ["home","shortcuts","youtube","about"];
+document.querySelectorAll(".nav .item").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    document.querySelectorAll(".nav .item").forEach(x=>x.classList.remove("active"));
+    btn.classList.add("active");
+    const page = btn.dataset.page;
+    pages.forEach(p=>{
+      document.getElementById("page-"+p).style.display = (p===page) ? "block" : "none";
+    });
+  });
+});
+
+/* ===============================
+   2) Stats (local only)
+================================ */
+const STATS_KEY = "vnx_stats_v1";
+function loadStats(){
+  try{ return JSON.parse(localStorage.getItem(STATS_KEY) || "{}"); }
+  catch{ return {}; }
+}
+function saveStats(s){ localStorage.setItem(STATS_KEY, JSON.stringify(s)); }
+function incStat(name){
+  const s = loadStats();
+  s[name] = (s[name]||0) + 1;
+  saveStats(s);
+  renderQuickStats();
+}
+function renderQuickStats(){
+  const s = loadStats();
+  const visits = s.visits||0;
+  const searches = s.searches||0;
+  const tickets = loadTickets().length;
+
+  document.getElementById("chipVisits").textContent = "زيارات: " + visits;
+  document.getElementById("chipSearches").textContent = "بحث: " + searches;
+  document.getElementById("chipTickets").textContent = "بلاغات: " + tickets;
+
+  document.getElementById("quickStats").textContent =
+    `زيارات (نفس الجهاز): ${visits} • عمليات بحث: ${searches} • بلاغات: ${tickets}`;
+}
+incStat("visits"); // count a visit
+renderQuickStats();
+
+/* ===============================
+   3) Search + Safety
+================================ */
+const searchInput = document.getElementById("searchInput");
+const goBtn = document.getElementById("goBtn");
+const clearBtn = document.getElementById("clearBtn");
+
+const warnBox = document.getElementById("warnBox");
+const warnText = document.getElementById("warnText");
+const cancelWarn = document.getElementById("cancelWarn");
+const continueWarn = document.getElementById("continueWarn");
+
+let pendingUrl = "";
+
+const blockedShorteners = ["bit.ly","t.co","tinyurl.com","goo.gl","cutt.ly","is.gd","rebrand.ly"];
+const badWords = ["phishing","stealer","token","free nitro","discordnitro","malware","spyware"];
+
+function toUrlOrSearch(text){
+  text = (text || "").trim();
+  if(!text) return "https://duckduckgo.com/";
+  if(text.includes(".") && !text.includes(" ")){
+    if(!/^https?:\/\//i.test(text)) text = "https://" + text;
+    return text;
+  }
+  return "https://duckduckgo.com/?q=" + encodeURIComponent(text);
+}
+function analyze(url){
+  try{
+    const u = new URL(url);
+    const host = u.hostname.toLowerCase();
+    const full = url.toLowerCase();
+
+    if(u.protocol !== "https:") return "الرابط غير آمن لأنه HTTP. استخدم HTTPS فقط.";
+    if(blockedShorteners.includes(host)) return "هذا رابط مختصر. الأفضل تستخدم الرابط الحقيقي.";
+    if(badWords.some(w => full.includes(w))) return "الرابط يحتوي كلمات مشبوهة. انتبه.";
+    return "";
+  }catch{
+    return "الرابط غير صحيح.";
+  }
+}
+function openUrl(url){
+  window.open(url, "_blank", "noopener");
+}
+function go(){
+  const url = toUrlOrSearch(searchInput.value);
+  const warning = analyze(url);
+
+  if(warning){
+    pendingUrl = url;
+    warnText.textContent = warning + " (إذا متأكد اضغط متابعة)";
+    warnBox.style.display = "block";
+    return;
+  }
+  warnBox.style.display = "none";
+  incStat("searches");
+  openUrl(url);
+}
+goBtn.addEventListener("click", go);
+searchInput.addEventListener("keydown", (e)=>{ if(e.key==="Enter") go(); });
+clearBtn.addEventListener("click", ()=>{ searchInput.value=""; });
+
+cancelWarn.addEventListener("click", ()=>{
+  warnBox.style.display = "none";
+  pendingUrl = "";
+});
+continueWarn.addEventListener("click", ()=>{
+  if(pendingUrl){
+    incStat("searches");
+    openUrl(pendingUrl);
+  }
+  warnBox.style.display = "none";
+  pendingUrl = "";
+});
+
+document.querySelectorAll("[data-url]").forEach(btn=>{
+  btn.addEventListener("click", ()=> openUrl(btn.dataset.url));
+});
+
+/* ===============================
+   4) Rating
+================================ */
+const RATE_KEY = "vnx_rating_v1";
+let currentRate = parseInt(localStorage.getItem(RATE_KEY) || "5", 10);
+
+const openRateBtn = document.getElementById("openRate");
+const rateOverlay = document.getElementById("rateOverlay");
+const closeRate = document.getElementById("closeRate");
+const cancelRate = document.getElementById("cancelRate");
+const saveRate = document.getElementById("saveRate");
+const rateText = document.getElementById("rateText");
+
+function showRate(){
+  rateOverlay.style.display = "block";
+  rateText.textContent = `تقييمك الحالي: ${currentRate}/5`;
+}
+function hideRate(){ rateOverlay.style.display = "none"; }
+
+openRateBtn.addEventListener("click", showRate);
+closeRate.addEventListener("click", hideRate);
+cancelRate.addEventListener("click", hideRate);
+rateOverlay.addEventListener("click",(e)=>{ if(e.target===rateOverlay) hideRate(); });
+
+function setRate(n){
+  currentRate = n;
+  rateText.textContent = `تقييمك الحالي: ${currentRate}/5`;
+}
+document.getElementById("s1").onclick=()=>setRate(1);
+document.getElementById("s2").onclick=()=>setRate(2);
+document.getElementById("s3").onclick=()=>setRate(3);
+document.getElementById("s4").onclick=()=>setRate(4);
+document.getElementById("s5").onclick=()=>setRate(5);
+
+saveRate.addEventListener("click", ()=>{
+  localStorage.setItem(RATE_KEY, String(currentRate));
+  alert("✅ تم حفظ التقييم");
+  hideRate();
+});
+
+/* ===============================
+   5) Tickets + Ban (local)
+================================ */
+const LS_KEY = "vnx_tickets_v2";
+function loadTickets(){
+  try{ return JSON.parse(localStorage.getItem(LS_KEY) || "[]"); }
+  catch{ return []; }
+}
+function saveTickets(arr){
+  localStorage.setItem(LS_KEY, JSON.stringify(arr));
+}
+
+const BAN_KEY = "vnx_bans_v1";
+function loadBans(){
+  try{ return JSON.parse(localStorage.getItem(BAN_KEY) || "[]"); }
+  catch{ return []; }
+}
+function saveBans(arr){ localStorage.setItem(BAN_KEY, JSON.stringify(arr)); }
+function isBanned(uid){ return loadBans().includes(uid); }
+function addBan(uid){
+  uid = (uid||"").trim();
+  if(!uid) return;
+  const bans = loadBans();
+  if(!bans.includes(uid)) bans.unshift(uid);
+  saveBans(bans);
+}
+function removeBan(uid){
+  const bans = loadBans().filter(x=>x!==uid);
+  saveBans(bans);
+}
+
+/* Support UI */
+const supportOverlay = document.getElementById("supportOverlay");
+const openSupport = document.getElementById("openSupport");
+const closeSupport = document.getElementById("closeSupport");
+const cancelSupport = document.getElementById("cancelSupport");
+const sendSupport = document.getElementById("sendSupport");
+const supportMsg = document.getElementById("supportMsg");
+
+function openSupportBox(){
+  if(isBanned(USER_ID)){
+    alert("🚫 لا يمكنك إرسال بلاغ لأنك محظور.");
+    return;
+  }
+  supportOverlay.style.display = "block";
+  supportMsg.focus();
+}
+function closeSupportBox(){ supportOverlay.style.display = "none"; }
+
+openSupport.addEventListener("click", openSupportBox);
+closeSupport.addEventListener("click", closeSupportBox);
+cancelSupport.addEventListener("click", closeSupportBox);
+supportOverlay.addEventListener("click",(e)=>{ if(e.target===supportOverlay) closeSupportBox(); });
+
+sendSupport.addEventListener("click", ()=>{
+  if(isBanned(USER_ID)){
+    alert("🚫 لا يمكنك إرسال بلاغ لأنك محظور.");
+    return;
+  }
+  const text = (supportMsg.value||"").trim();
+  if(!text){
+    alert("اكتب المشكلة أولاً");
+    return;
+  }
+  const tickets = loadTickets();
+  tickets.unshift({
+    id: "T" + Date.now(),
+    userId: USER_ID,
+    rating: parseInt(localStorage.getItem(RATE_KEY) || "5", 10),
+    text,
+    status: "open",
+    createdAt: Date.now()
+  });
+  saveTickets(tickets);
+  supportMsg.value = "";
+  closeSupportBox();
+  renderQuickStats();
+  alert("✅ تم إرسال البلاغ");
+});
+
+/* ===============================
+   6) Owner (hidden 100%)
+   Secret: click logo 7 times
+================================ */
+const brandSecret = document.getElementById("brandSecret");
+const ownerPassOverlay = document.getElementById("ownerPassOverlay");
+const ownerPassInput = document.getElementById("ownerPassInput");
+const ownerPassOk = document.getElementById("ownerPassOk");
+const ownerPassCancel = document.getElementById("ownerPassCancel");
+const ownerPassClose = document.getElementById("ownerPassClose");
+const ownerPassMsg = document.getElementById("ownerPassMsg");
+
+const adminPanel = document.getElementById("adminPanel");
+const closeAdmin = document.getElementById("closeAdmin");
+const refreshAll = document.getElementById("refreshAll");
+const wipeTickets = document.getElementById("wipeTickets");
+
+const ticketsList = document.getElementById("ticketsList");
+const emptyTickets = document.getElementById("emptyTickets");
+const stats = document.getElementById("stats");
+const filterStatus = document.getElementById("filterStatus");
+const sortBy = document.getElementById("sortBy");
+
+const banInput = document.getElementById("banInput");
+const banAddBtn = document.getElementById("banAddBtn");
+const banList = document.getElementById("banList");
+const banEmpty = document.getElementById("banEmpty");
+
+let secretClicks = 0;
+let secretTimer = null;
+
+brandSecret.addEventListener("click", ()=>{
+  secretClicks++;
+  clearTimeout(secretTimer);
+  secretTimer = setTimeout(()=> secretClicks = 0, 900);
+
+  if(secretClicks >= 7){
+    secretClicks = 0;
+    ownerPassOverlay.style.display = "block";
+    ownerPassInput.value = "";
+    ownerPassMsg.style.display = "none";
+    ownerPassInput.focus();
+  }
+});
+
+function closeOwnerPass(){ ownerPassOverlay.style.display = "none"; }
+ownerPassCancel.onclick = closeOwnerPass;
+ownerPassClose.onclick = closeOwnerPass;
+ownerPassOverlay.addEventListener("click",(e)=>{ if(e.target===ownerPassOverlay) closeOwnerPass(); });
+
+ownerPassOk.onclick = ()=>{
+  if(ownerPassInput.value === OWNER_PASSWORD){
+    closeOwnerPass();
+    adminPanel.style.display = "block";
+    renderTickets();
+    renderBans();
+  }else{
+    ownerPassMsg.style.display = "block";
+  }
+};
+ownerPassInput.addEventListener("keydown",(e)=>{ if(e.key==="Enter") ownerPassOk.click(); });
+
+closeAdmin.addEventListener("click", ()=> adminPanel.style.display = "none");
+refreshAll.addEventListener("click", ()=>{ renderTickets(); renderBans(); renderAdminStats(); });
+
+wipeTickets.addEventListener("click", ()=>{
+  if(confirm("أكيد مسح كل البلاغات؟")){
+    saveTickets([]);
+    renderTickets();
+    renderQuickStats();
+    renderAdminStats();
+  }
+});
+
+filterStatus.addEventListener("change", renderTickets);
+sortBy.addEventListener("change", renderTickets);
+
+banAddBtn.addEventListener("click", ()=>{
+  addBan(banInput.value);
+  banInput.value = "";
+  renderBans();
+  renderTickets();
+});
+
+/* ===============================
+   7) Owner Panel Rendering
+================================ */
+function renderAdminStats(){
+  const s = loadStats();
+  const visits = s.visits||0;
+  const searches = s.searches||0;
+  const all = loadTickets();
+  const open = all.filter(t=>t.status==="open").length;
+  const done = all.filter(t=>t.status==="done").length;
+  const bans = loadBans().length;
+
+  stats.textContent = `زيارات: ${visits} • بحث: ${searches} • بلاغات: ${all.length} (مفتوحة: ${open} / تم الحل: ${done}) • محظورين: ${bans}`;
+}
+
+function renderTickets(){
+  renderAdminStats();
+
+  let tickets = loadTickets();
+
+  tickets.sort((a,b)=> sortBy.value==="new" ? (b.createdAt-a.createdAt) : (a.createdAt-b.createdAt));
+
+  if(filterStatus.value !== "all"){
+    tickets = tickets.filter(t=>t.status===filterStatus.value);
+  }
+
+  ticketsList.innerHTML = "";
+  emptyTickets.style.display = tickets.length ? "none" : "block";
+
+  tickets.forEach(t=>{
+    const d = new Date(t.createdAt);
+    const time = d.toLocaleString("ar-SA");
+    const banned = t.userId ? isBanned(t.userId) : false;
+
+    const div = document.createElement("div");
+    div.className = "ticket";
+    div.innerHTML = `
+      <div class="ticketTop">
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <b>${escapeHtml(t.id)}</b>
+          <span class="badge ${t.status==="open"?"open":"done"}">${t.status==="open"?"مفتوحة":"تم الحل"}</span>
+          <span class="muted" style="font-size:12px">${time}</span>
+        </div>
+        <div class="actions">
+          ${t.status==="open"
+            ? `<button class="btn primary" data-act="done" data-id="${t.id}">تم الحل</button>`
+            : `<button class="btn" data-act="reopen" data-id="${t.id}">إرجاع</button>`}
+          <button class="btn danger" data-act="del" data-id="${t.id}">حذف</button>
+          <button class="btn danger" data-act="ban" data-uid="${escapeHtml(t.userId||"")}">🚫 حظر</button>
+        </div>
+      </div>
+
+      <p>${escapeHtml(t.text)}</p>
+      <div class="muted" style="margin-top:8px">⭐ تقييم: ${(t.rating ?? 5)}/5</div>
+      <div class="muted">User ID: <b>${escapeHtml(t.userId || "-")}</b> ${banned ? "• 🚫 محظور" : ""}</div>
+    `;
+    ticketsList.appendChild(div);
+  });
+
+  ticketsList.querySelectorAll("button[data-act]").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const act = btn.dataset.act;
+
+      if(act === "ban"){
+        const uid = (btn.dataset.uid||"").trim();
+        if(!uid) return alert("ما فيه User ID لهذا البلاغ.");
+        addBan(uid);
+        renderBans();
+        renderTickets();
+        return;
+      }
+
+      const id = btn.dataset.id;
+      const all = loadTickets();
+      const idx = all.findIndex(x=>x.id===id);
+      if(idx===-1) return;
+
+      if(act==="done") all[idx].status = "done";
+      if(act==="reopen") all[idx].status = "open";
+      if(act==="del") all.splice(idx,1);
+
+      saveTickets(all);
+      renderTickets();
+      renderQuickStats();
+    });
+  });
+}
+
+function renderBans(){
+  const bans = loadBans();
+  banList.innerHTML = "";
+  banEmpty.style.display = bans.length ? "none" : "block";
+
+  bans.forEach(uid=>{
+    const row = document.createElement("div");
+    row.className = "ticket";
+    row.innerHTML = `
+      <div class="ticketTop">
+        <div><b>${escapeHtml(uid)}</b></div>
+        <div class="actions">
+          <button class="btn" data-unban="${escapeHtml(uid)}">فك الحظر</button>
+        </div>
+      </div>
+      <div class="muted">الحظر يعمل على نفس الجهاز/المتصفح.</div>
+    `;
+    banList.appendChild(row);
+  });
+
+  banList.querySelectorAll("button[data-unban]").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const uid = btn.dataset.unban;
+      removeBan(uid);
+      renderBans();
+      renderTickets();
+    });
+  });
+}
+</script>
+</body>
+  </html>
